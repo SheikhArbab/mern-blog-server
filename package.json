@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node server",
-    "dev": "nodemon server"
+    "dev": "nodemon server",
+    "build": "babel . -d dist"
   },
   "keywords": [],
   "author": "arbab zafar",
@@ -24,5 +25,9 @@
     "mongoose": "^8.0.4",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
   }
 }

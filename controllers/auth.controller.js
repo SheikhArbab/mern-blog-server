@@ -27,11 +27,10 @@ export const signUp = async (req, res, next) => {
 
 
 
-
 export const signIn = async (req, res, next) => {
-    const { email, password } = req.body;
-
     try {
+        const { email, password } = req.body;
+
         // Find the user with the provided email
         const user = await User.findOne({ email });
 
@@ -40,28 +39,31 @@ export const signIn = async (req, res, next) => {
             return res.status(401).json({ message: 'Invalid credentials', success: false });
         }
 
-        const { password: pass, ...rest } = user._doc;
+        const { password: userPassword, ...userWithoutPassword } = user._doc;
 
-        // Compare the provided password with the hashed password in the database
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        // Check if the provided password matches the stored password
+        const isPasswordValid = await bcrypt.compare(password, userPassword);
 
-        // If the password is not valid, return an error
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid credentials', success: false });
         }
 
         // Generate a JWT token for the authenticated user
-        const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign(
+            { userId: user._id, email: user.email },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '1d' }
+        );
 
         // Send the token in the response and set it as a secure, httpOnly cookie
-        res.cookie('token', token).status(200).json({ message: 'Login successfully', success: true, user: rest, token });
+        res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' })
+            .status(200)
+            .json({ message: 'Login successfully', success: true, user: userWithoutPassword, token });
 
     } catch (error) {
         next(error);
     }
 };
-
-
 
 const handleSocialAuthentication = async (req, res, next) => {
     const { username, email, avatar } = req.body;
