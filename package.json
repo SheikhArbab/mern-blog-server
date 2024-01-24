@@ -2,12 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node server",
-    "dev": "nodemon server",
-    "build": "babel . -d dist"
+    "start": "node index",
+    "dev": "nodemon index",
+    "build": "babel . --harmony -d dist "
   },
   "keywords": [],
   "author": "arbab zafar",

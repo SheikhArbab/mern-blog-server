@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import User from '../models/users.model.js';
 
 
-export const i = async (req,res,next)=>{
-res.json({message:"from blogger"})
+export const i = async (req, res, next) => {
+    res.json({ message: "from blogger" })
 }
 
 
@@ -40,6 +40,8 @@ export const signIn = async (req, res, next) => {
         }
 
         const { password: userPassword, ...userWithoutPassword } = user._doc;
+        
+        
 
         // Check if the provided password matches the stored password
         const isPasswordValid = await bcrypt.compare(password, userPassword);
@@ -50,7 +52,7 @@ export const signIn = async (req, res, next) => {
 
         // Generate a JWT token for the authenticated user
         const token = jwt.sign(
-            { userId: user._id, email: user.email },
+            { userId: user._id, email: user.email, isAdmin: user.IsAdmin },
             process.env.JWT_SECRET_KEY,
             { expiresIn: '1d' }
         );
@@ -67,14 +69,18 @@ export const signIn = async (req, res, next) => {
 
 const handleSocialAuthentication = async (req, res, next) => {
     const { username, email, avatar } = req.body;
- 
+
 
     try {
         const socialUser = await User.findOne({ email });
 
         if (socialUser) {
             const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
-            const token = jwt.sign({ id: socialUser._id, exp: expirationDate.getTime() / 1000, payload: socialUser }, process.env.JWT_SECRET_KEY);
+            const token = jwt.sign(
+                { userId: user._id, email: user.email, isAdmin: user.IsAdmin },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: '1d' }
+            );
 
             const { password: _, ...rest } = socialUser._doc;
 
@@ -92,7 +98,11 @@ const handleSocialAuthentication = async (req, res, next) => {
             await newUser.save();
 
             const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
-            const token = jwt.sign({ id: newUser._id, exp: expirationDate.getTime() / 1000 }, process.env.JWT_SECRET_KEY);
+            const token = jwt.sign(
+                { userId: user._id, email: user.email, isAdmin: user.IsAdmin },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: '1d' }
+            );
 
             const { password: _, ...rest } = newUser._doc;
 
