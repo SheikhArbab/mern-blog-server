@@ -13,7 +13,8 @@ connectDB();
 
 app.use(bodyParser.json({ limit: '1gb' }));
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: 'https://mern-blogger.netlify.app/' }));  
+app.use(cors({ credentials: true, origin: 'https://mern-blogger.netlify.app' }));
+
 app.use("/", express.static('public'), express.static('public'), userRoutes, authRoutes);
 
 app.use(errorHandler);
