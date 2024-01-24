@@ -16,7 +16,7 @@ connectDB();
 app.use(bodyParser.json({ limit: '1gb' }));
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: process.env.Origin_ALLOW}));
-app.use("/blogger",express.static('public'), express.static('public') ,userRoutes,authRoutes );  
+app.use("/",express.static('public'), express.static('public') ,userRoutes,authRoutes );  
   
 app.use(errorHandler);
 

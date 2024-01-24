@@ -20,7 +20,7 @@ export const dateFormatter = (value) => {
 export const imageUploading = async ({ image, folder }) => {
     let imageData;
     let fileName;
-    let uri = `http://localhost:4000/blogger/uploads/${folder}/`;
+    let uri = `http://localhost:4000/uploads/${folder}/`;
 
     if (typeof image === 'string' && image.startsWith('http')) {
         // Fetch image from URL

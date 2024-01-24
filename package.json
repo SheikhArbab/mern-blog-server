@@ -5,8 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "start": "node server",
+    "dev": "nodemon server"
   },
   "keywords": [],
   "author": "arbab zafar",
