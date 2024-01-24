@@ -3,24 +3,19 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import {userRoutes,authRoutes} from './routes/index.routes.js';
+import { userRoutes, authRoutes } from './routes/index.routes.js';
 import { connectDB } from './config/config.js';
-import { errorHandler } from './middlewares/errorHandler.js'; 
-
- 
+import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
 dotenv.config();
-connectDB(); 
+connectDB();
 
 app.use(bodyParser.json({ limit: '1gb' }));
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: process.env.Origin_ALLOW}));
-app.use("/",express.static('public'), express.static('public') ,userRoutes,authRoutes );  
-  
-app.use(errorHandler);
+app.use(cors({ credentials: true, origin: '*' })); // Update this line
+app.use("/", express.static('public'), express.static('public'), userRoutes, authRoutes);
 
- 
- 
+app.use(errorHandler);
 
 app.listen(process.env.PORT, () => console.log(`Server: ${process.env.PORT}`));
