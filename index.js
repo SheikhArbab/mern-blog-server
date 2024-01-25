@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { userRoutes, authRoutes } from './routes/index.routes.js';
+import { userRoutes, authRoutes,postRoutes } from './routes/index.routes.js';
 import { connectDB } from './config/config.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -13,9 +13,9 @@ connectDB();
 
 app.use(bodyParser.json({ limit: '1gb' }));
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: 'https://mern-blogger.netlify.app' }));
+app.use(cors({ credentials: true, origin:process.env.Origin_ALLOW }));
 
-app.use("/", express.static('public'), express.static('public'), userRoutes, authRoutes);
+app.use("/", express.static('public'), express.static('public'), userRoutes, authRoutes,postRoutes);
 
 app.use(errorHandler);
 

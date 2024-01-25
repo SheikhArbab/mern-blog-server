@@ -1,7 +1,5 @@
 import User from '../models/users.model.js';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { errorHandler } from '../middlewares/errorHandler.js';
+import bcrypt from 'bcrypt'; 
 import { imageUploading } from '../utils/utils.js';
 
 

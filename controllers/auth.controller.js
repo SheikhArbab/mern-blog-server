@@ -40,8 +40,8 @@ export const signIn = async (req, res, next) => {
         }
 
         const { password: userPassword, ...userWithoutPassword } = user._doc;
-        
-        
+
+
 
         // Check if the provided password matches the stored password
         const isPasswordValid = await bcrypt.compare(password, userPassword);
@@ -52,15 +52,16 @@ export const signIn = async (req, res, next) => {
 
         // Generate a JWT token for the authenticated user
         const token = jwt.sign(
-            { userId: user._id, email: user.email, isAdmin: user.IsAdmin },
+            { payload: userWithoutPassword, userId: user._id, email: user.email, isAdmin: user.IsAdmin },
             process.env.JWT_SECRET_KEY,
+
             { expiresIn: '1d' }
         );
 
         // Send the token in the response and set it as a secure, httpOnly cookie
         res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' })
             .status(200)
-            .json({ message: 'Login successfully', success: true, user: userWithoutPassword, token });
+            .json({ message: 'Login successfully', success: true, payload: userWithoutPassword, token });
 
     } catch (error) {
         next(error);
@@ -75,19 +76,20 @@ const handleSocialAuthentication = async (req, res, next) => {
         const socialUser = await User.findOne({ email });
 
         if (socialUser) {
+            const { password: _, ...rest } = socialUser._doc;
+
             const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
             const token = jwt.sign(
-                { userId: user._id, email: user.email, isAdmin: user.IsAdmin },
+                { payload: rest, userId: rest._id, email: socialUser.email, isAdmin: socialUser.IsAdmin },
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: '1d' }
             );
 
-            const { password: _, ...rest } = socialUser._doc;
-
-            res.cookie('token', token, { httpOnly: true, expires: expirationDate }).status(200).json({ user: rest, token });
+            res.cookie('token', token, { httpOnly: true, expires: expirationDate }).status(200).json({ payload: rest, token });
         } else {
             const generatedPassword = Math.random().toString(36).slice(-8);
             const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
             const newUser = new User({
                 username,
                 email,
@@ -99,18 +101,19 @@ const handleSocialAuthentication = async (req, res, next) => {
 
             const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
             const token = jwt.sign(
-                { userId: user._id, email: user.email, isAdmin: user.IsAdmin },
+                { userId: newUser._id, email: newUser.email, isAdmin: newUser.IsAdmin },
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: '1d' }
             );
 
-            const { password: _, ...rest } = newUser._doc;
+            const { password: _, ...newUserRest } = newUser._doc;
 
-            res.cookie('token', token, { httpOnly: true, expires: expirationDate }).status(200).json(rest);
+            res.cookie('token', token, { httpOnly: true, expires: expirationDate }).status(200).json(newUserRest);
         }
     } catch (error) {
         next(error);
     }
+
 };
 
 

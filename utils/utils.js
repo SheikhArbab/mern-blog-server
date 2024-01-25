@@ -20,7 +20,7 @@ export const dateFormatter = (value) => {
 export const imageUploading = async ({ image, folder }) => {
     let imageData;
     let fileName;
-    let uri = `http://localhost:4000/uploads/${folder}/`;
+    let uri = `${process.env.IMAGE_PATH}/uploads/${folder}/`;
 
     if (typeof image === 'string' && image.startsWith('http')) {
         // Fetch image from URL
@@ -42,8 +42,7 @@ export const imageUploading = async ({ image, folder }) => {
     const filePath = path.resolve(imagePath);
     fs.writeFileSync(filePath, imageData, { encoding: 'base64' });
  
-    const fullUrl =` ${uri}${fileName}`;
-
+    const fullUrl =` ${uri}${fileName}`; 
     return fullUrl.trim();
 };
 

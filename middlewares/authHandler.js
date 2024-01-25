@@ -19,9 +19,9 @@ export const isAuthenticated = async (req, res, next) => {
 
 // isAuthorized middleware
 export const isAuthorized = (...roles) => {
-    return (req, res, next) => {
-        if (!roles.includes(req.validUser.role)) {
-            return next(new Error(`Role ${req.validUser.role} is not allowed to access this resource`));
+    return (req, res, next) => { 
+        if (!req.validUser.IsAdmin) {
+            return next(new Error(`Not allowed to access this resource`));
         }
         next();
     }
