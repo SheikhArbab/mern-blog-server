@@ -1,13 +1,13 @@
 import User from '../models/users.model.js';
-import bcrypt from 'bcrypt'; 
+import bcrypt from 'bcrypt';
 import { imageUploading } from '../utils/utils.js';
 
 
 export const updateUser = async (req, res, next) => {
 
     let { username, email, profilePicture, password } = req.body;
-    const {userId }= req.params;
- 
+    const { userId } = req.params;
+
     try {
         // Find the user by ID
         const userToUpdate = await User.findById(userId);
@@ -43,8 +43,10 @@ export const updateUser = async (req, res, next) => {
         // Save the updated user
         const updatedUser = await userToUpdate.save();
 
+        const { password: _, ...rest } = updatedUser._doc;
+
         res.json({
-            updatedUser,
+            updatedUser: rest,
             success: true,
             message: `The user ${updatedUser.username} has been successfully updated.`,
         });
@@ -52,3 +54,24 @@ export const updateUser = async (req, res, next) => {
         next(error);
     }
 };
+
+
+export const deleteUser = async (req, res, next) => {
+
+    const { userId } = req.params;
+
+    try {
+
+        // Find and delete the post
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'User not found', success: false });
+        }
+
+        res.status(200).json({ deletedUser, message: 'User deleted successfully', success: true });
+    } catch (error) {
+        next(error);
+    }
+};
+

@@ -50,6 +50,8 @@ export const signIn = async (req, res, next) => {
             return res.status(401).json({ message: 'Invalid credentials', success: false });
         }
 
+        const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
+
         // Generate a JWT token for the authenticated user
         const token = jwt.sign(
             { payload: userWithoutPassword, userId: user._id, email: user.email, isAdmin: user.IsAdmin },
@@ -59,7 +61,7 @@ export const signIn = async (req, res, next) => {
         );
 
         // Send the token in the response and set it as a secure, httpOnly cookie
-        res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' })
+        res.cookie('token', token, { httpOnly: true, secure: true,  expires: expirationDate})
             .status(200)
             .json({ message: 'Login successfully', success: true, payload: userWithoutPassword, token });
 
