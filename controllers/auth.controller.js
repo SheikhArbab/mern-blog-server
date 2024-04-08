@@ -61,7 +61,10 @@ export const signIn = async (req, res, next) => {
         );
 
         // Send the token in the response and set it as a secure, httpOnly cookie
-        res.cookie('token', token, {    expires: expirationDate})
+
+        console.log(process.env.Origin_ALLOW);
+
+        res.cookie('token', token, { expires: expirationDate, domain: process.env.Origin_ALLOW })
             .status(200)
             .json({ message: 'Login successfully', success: true, payload: userWithoutPassword, token });
 
@@ -86,8 +89,9 @@ const handleSocialAuthentication = async (req, res, next) => {
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: '1d' }
             );
+ 
 
-            res.cookie('token', token, {  expires: expirationDate }).status(200).json({ payload: rest, token });
+            res.cookie('token', token,  { expires: expirationDate, domain: process.env.Origin_ALLOW }).status(200).json({ payload: rest, token });
         } else {
             const generatedPassword = Math.random().toString(36).slice(-8);
             const hashedPassword = await bcrypt.hash(generatedPassword, 10);
@@ -110,7 +114,7 @@ const handleSocialAuthentication = async (req, res, next) => {
 
             const { password: _, ...newUserRest } = newUser._doc;
 
-            res.cookie('token', token, {  expires: expirationDate }).status(200).json(newUserRest);
+            res.cookie('token', token,  { expires: expirationDate, domain: process.env.Origin_ALLOW }).status(200).json(newUserRest);
         }
     } catch (error) {
         next(error);
